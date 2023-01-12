@@ -2,7 +2,6 @@
 if game.PlaceId ~= 8737602449 and game.PlaceId ~= 8943844393 then
 	return
 end
-print('TurningGlobe ily thanks for showcasing / szze#6220')
 if getgenv().loaded then
 	return
 else
@@ -11,7 +10,6 @@ end
 task.wait()
   --Anti-AFK
 local Players = game:GetService("Players")
-Players.LocalPlayer:Kick('unsupported executor')
 local connections = getconnections or get_signal_cons or nil
 task.spawn(function()
 	if connections then
