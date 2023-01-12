@@ -828,18 +828,7 @@ while not pcall(boothclaim) do
 end
 
 hopSet()
---Walks to booth
-local Controls = require(Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule")):GetControls()
-Controls:Disable()
-Players.LocalPlayer.Character.Humanoid:MoveTo(Vector3.new(booths[tostring(unclaimed[1])]:match("(.+), (.+), (.+)")))
-local atBooth = false
-local function noclip()
-    for i,v in pairs(Players.LocalPlayer.Character:GetDescendants()) do
-        if v:IsA("BasePart") then
-            v.CanCollide = false
-        end
-    end
-end
+
 local noclipper = game:GetService("RunService").Stepped:Connect(noclip)
 Players.LocalPlayer.Character.Humanoid.MoveToFinished:Connect(function(reached)
     atBooth = true
@@ -861,6 +850,41 @@ else
     task.wait(.25)
     Players:Chat("/e dance".. getgenv().settings.danceChoice)
 end
+
+local function walkToBooth()
+	local theCframe
+	if string.find(tostring(getgenv().settings.boothPosition), "6") then
+		theCframe = CFrame.new(getgenv().settings.boothPosition, 0, 0)
+	else
+		theCframe = CFrame.new(0, 0, getgenv().settings.boothPosition)
+	end
+	local boothPos
+	for i, v in ipairs(game:GetService("Workspace").BoothInteractions:GetChildren()) do
+		if v:GetAttribute("BoothSlot") == unclaimed[1] then
+			boothPos = v.CFrame * theCframe
+			break
+		end
+	end
+	game:GetService('VirtualInputManager'):SendKeyEvent(true, "LeftControl", false, game)
+	local Controls = require(Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule")):GetControls()
+	Controls:Disable()
+	local atBooth = false
+	game:GetService("Workspace").Map.Main.Bench:Destroy()
+	Players.LocalPlayer.Character.Humanoid:MoveTo(boothPos.Position)
+	Players.LocalPlayer.Character.Humanoid.MoveToFinished:Connect(function(reached)
+		atBooth = true
+	end)
+	repeat
+		task.wait()
+	until atBooth
+	Players.LocalPlayer.Character.Humanoid.RootPart.CFrame = CFrame.new(boothPos.Position)
+	Controls:Enable()
+	game:GetService('VirtualInputManager'):SendKeyEvent(false, "LeftControl", false, game)
+	Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(Players.LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(40, 14, 101)))
+	task.wait(0.6)
+	Players:Chat('/e dance' .. getgenv().settings.danceChoice)
+end
+walkToBooth()
 
 if getgenv().settings.autoBeg then
     spamming = task.spawn(begging)
