@@ -1,33 +1,9 @@
 repeat wait() until game:IsLoaded()
---[[
-	This property is protected by TpaBa.
-]]
-
---[[
-	if hookmetamethod and typeof(hookmetamethod) == 'function' then
-	local oldHook
-	oldHook = hookmetamethod(game, "__namecall", function(self, ...)
-		if getnamecallmethod() == "IsVoiceEnabledForUserIdAsync" then
-			return true
-		end
-		return oldHook(self, ...)
-	end)
+if getgenv().loaded then
+	return
+else
+	getgenv().loaded = true
 end
-]]
-
---[[
-	if isfile and writefile and typeof(isfile) == 'function' and typeof(writefile) == 'function' then
-	if not isfile('PromptedDiscordCFCommunity.txt') then
-		writefile('PromptedDiscordCFCommunity.txt', game:GetService('HttpService'):JSONEncode('hi'))
-		local Module = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Source.lua"))()
-		Module.Prompt({
-			invite = "link",
-			name = "",
-		})
-	end
-end
-]]
-
   --Anti-AFK
 local Players = game:GetService("Players")
 local connections = getconnections or get_signal_cons or nil
@@ -162,8 +138,7 @@ local sNames = {
 	'standingPosition',
 	'AnonymousMode',
 	'boothSwitcher',
-	'serverHopAfterDonation',
-	'jumpsPerRobux'
+	'serverHopAfterDonation'
 }
 local sValues = {
 	true,
@@ -182,7 +157,7 @@ local sValues = {
 		"tysm!"
 	},
 	false,
-	"✅ 1 ROBUX DONATED = $D JUMP ✅",
+	"✅ 1 ROBUX DONATED = 1 JUMP ✅",
 	false,
 	"your text here",
 	"#ffffff",
@@ -204,8 +179,7 @@ local sValues = {
 	'Front',
 	false,
 	false,
-	false,
-	1
+	false
 }
 if #getgenv().settings ~= sNames then
 	for i, v in ipairs(sNames) do
@@ -364,22 +338,22 @@ local function webhook(msg)
 end
 	  
   --GUI
-local Window = library:AddWindow("Загрузка... Бегу к стойке...",
+local Window = library:AddWindow("Loading...",
   {
 	main_color = Color3.fromRGB(80, 80, 80),
-	min_size = Vector2.new(480, 433),
+	min_size = Vector2.new(373, 433),
 	toggle_key = Enum.KeyCode.RightShift,
 })
-local boothTab = Window:AddTab("Стойка")
-local signTab = Window:AddTab("Табличка")
-local chatTab = Window:AddTab("Чат")
-local webhookTab = Window:AddTab("Вебхук")
-local serverHopTab = Window:AddTab("Сервер")
-local otherTab = Window:AddTab("Другое")
+local boothTab = Window:AddTab("Booth")
+local signTab = Window:AddTab("Sign")
+local chatTab = Window:AddTab("Chat")
+local webhookTab = Window:AddTab("Webhook")
+local serverHopTab = Window:AddTab("Server")
+local otherTab = Window:AddTab("Other")
 local bThemes = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui"):WaitForChild("BoothSettings"):WaitForChild("ScrollingFrame"):WaitForChild("ChangeTheme"):WaitForChild("Themes")
   
   --Booth Settings
-local textUpdateToggle = boothTab:AddSwitch("Обновление текста", function(bool)
+local textUpdateToggle = boothTab:AddSwitch("Text Update", function(bool)
 	if settingsLock then
 		return
 	end
@@ -390,7 +364,7 @@ local textUpdateToggle = boothTab:AddSwitch("Обновление текста",
 	end
 end)
 textUpdateToggle:Set(getgenv().settings.textUpdateToggle)
-local textUpdateDelay = boothTab:AddSlider("Задержка обновления текста (С)", function(x)
+local textUpdateDelay = boothTab:AddSlider("Text Update Delay (S)", function(x)
 	if settingsLock then
 		return
 	end
@@ -402,8 +376,8 @@ end,
 	["max"] = 120
 })
 textUpdateDelay:Set((getgenv().settings.textUpdateDelay / 120) * 100)
-boothTab:AddLabel("Цвет текста:")
-local hexBox = boothTab:AddTextBox("Только HEX", function(text)
+boothTab:AddLabel("Text Color:")
+local hexBox = boothTab:AddTextBox("Hex Codes Only", function(text)
 	if settingsLock then
 		return
 	end
@@ -420,8 +394,8 @@ end,
 	["clear"] = false
 })
 hexBox.Text = getgenv().settings.hexBox
-boothTab:AddLabel("Прибавка:")
-local goalBox = boothTab:AddTextBox("Только цифры", function(text)
+boothTab:AddLabel("Goal Increase:")
+local goalBox = boothTab:AddTextBox("Numbers Only", function(text)
 	if tonumber(text) then
 		getgenv().settings.goalBox = tonumber(text)
 		saveSettings()
@@ -432,32 +406,32 @@ end,
 	["clear"] = false
 })
 goalBox.Text = getgenv().settings.goalBox
-boothTab:AddLabel("Кастомный текст стойки:")
+boothTab:AddLabel("Custom Booth Text:")
 local customBoothText = boothTab:AddConsole({
 	["y"] = 50,
 	["source"] = "",
 })
-boothTab:AddLabel("Позиция:")
+boothTab:AddLabel("Standing Position:")
 local standingPos = boothTab:AddDropdown("[ " .. getgenv().settings.standingPosition .. " ]", function(t)
 	getgenv().settings.standingPosition = t
 	saveSettings()
-	if t == "Спереди" then
+	if t == "Front" then
 		getgenv().settings.boothPosition = 3
-	elseif t == "Слева" then
+	elseif t == "Left" then
 		getgenv().settings.boothPosition = -6
-	elseif t == "Справа" then
+	elseif t == "Right" then
 		getgenv().settings.boothPosition = 6
 	else
 		getgenv().settings.boothPosition = -5.5
 	end
 	saveSettings()
 end)
-standingPos:Add('Спереди')
-standingPos:Add('Слева')
-standingPos:Add('Справа')
-standingPos:Add('Позади')
+standingPos:Add('Front')
+standingPos:Add('Left')
+standingPos:Add('Right')
+standingPos:Add('Behind')
 customBoothText:Set(getgenv().settings.customBoothText)
-boothTab:AddButton("Сохранить", function()
+boothTab:AddButton("Save", function()
 	if #customBoothText:Get() > 221 then
 		return customBoothText:Set("221 Character Limit")
 	end
@@ -470,8 +444,9 @@ boothTab:AddButton("Сохранить", function()
 		update()
 	end
 end)
-local helpLabel = boothTab:AddLabel("$C = Собрано сейчас, $G = Цель, $D = Робуксы за прыжок, 221 Character Limit")
+local helpLabel = boothTab:AddLabel("$C = Собрано сейчас, $G = Цель, $D = Прыжок за робуксы, 221 Character Limit")
 helpLabel.TextSize = 9
+helpLabel.TextXAlignment = Enum.TextXAlignment.Center
   --Sign Settings
 pcall(function()
 	if game:GetService("MarketplaceService"):UserOwnsGamePassAsync(Players.LocalPlayer.UserId, 28460459) then
@@ -479,7 +454,7 @@ pcall(function()
 	end
 end)
 if signPass then
-	local signToggle = signTab:AddSwitch("Взять табличку", function(bool)
+	local signToggle = signTab:AddSwitch("Equip Sign", function(bool)
 		getgenv().settings.signToggle = bool
 		saveSettings()
 		if bool then
@@ -489,7 +464,7 @@ if signPass then
 		end
 	end)
 	signToggle:Set(getgenv().settings.signToggle)
-	local signUpdateToggle = signTab:AddSwitch("Обновление текста", function(bool)
+	local signUpdateToggle = signTab:AddSwitch("Text Update", function(bool)
 		if settingsLock then
 			return
 		end
@@ -500,8 +475,8 @@ if signPass then
 		end
 	end)
 	signUpdateToggle:Set(getgenv().settings.signUpdateToggle)
-	signTab:AddLabel("Цвет текста:")
-	local signHexBox = signTab:AddTextBox("Только HEX", function(text)
+	signTab:AddLabel("Text Color:")
+	local signHexBox = signTab:AddTextBox("Hex Codes Only", function(text)
 		if settingsLock then
 			return
 		end
@@ -520,13 +495,13 @@ if signPass then
 		["clear"] = false
 	})
 	signHexBox.Text = getgenv().settings.signHexBox
-	signTab:AddLabel("Текст на табличке:")
+	signTab:AddLabel("Sign Text:")
 	local signText = signTab:AddConsole({
 		["y"] = 50,
 		["source"] = "",
 	})
 	signText:Set(getgenv().settings.signText)
-	signTab:AddButton("Сохранить", function()
+	signTab:AddButton("Save", function()
 		if #signText:Get() > 221 then
 			return signText:Set("221 Character Limit")
 		end
@@ -539,20 +514,20 @@ if signPass then
 			update()
 		end
 	end)
-	local signHelpLabel = signTab:AddLabel("$C = Собрано сейчас, $G = Цель, 221 Character Limit")
+	local signHelpLabel = signTab:AddLabel("$C = Current, $G = Goal, 221 Character Limit")
 	signHelpLabel.TextSize = 9
 	signHelpLabel.TextXAlignment = Enum.TextXAlignment.Center
 else
-	signTab:AddLabel('Требуется табличка')
+	signTab:AddLabel('Requires Sign Gamepass')
 end
   
   --Chat Settings
-local autoThanks = chatTab:AddSwitch("Авто спасибо", function(bool)
+local autoThanks = chatTab:AddSwitch("Auto Thank You", function(bool)
 	getgenv().settings.autoThanks = bool
 	saveSettings()
 end)
 autoThanks:Set(getgenv().settings.autoThanks)
-local autoBeg = chatTab:AddSwitch("Авто пж", function(bool)
+local autoBeg = chatTab:AddSwitch("Auto Beg", function(bool)
 	if settingsLock then
 		return
 	end
@@ -565,7 +540,7 @@ local autoBeg = chatTab:AddSwitch("Авто пж", function(bool)
 	end
 end)
 autoBeg:Set(getgenv().settings.autoBeg)
-local thanksDelay = chatTab:AddSlider("Задержка спасибо (С)", function(x)
+local thanksDelay = chatTab:AddSlider("Thanks Delay (S)", function(x)
 	if settingsLock then
 		return
 	end
@@ -577,7 +552,7 @@ end,
 	["max"] = 120
 })
 thanksDelay:Set((getgenv().settings.thanksDelay / 120) * 100)
-local begDelay = chatTab:AddSlider("Задержка пж (С)", function(x)
+local begDelay = chatTab:AddSlider("Begging Delay (S)", function(x)
 	if settingsLock then
 		return
 	end
@@ -589,7 +564,7 @@ end,
 	["max"] = 300
 })
 begDelay:Set((getgenv().settings.begDelay / 300) * 100)
-local tym = chatTab:AddFolder("Сообщения спасибо:")
+local tym = chatTab:AddFolder("Thank You Messages:")
 local thanksMessage = tym:AddConsole({
 	["y"] = 170,
 	["source"] = "",
@@ -599,7 +574,7 @@ for i, v in ipairs(getgenv().settings.thanksMessage) do
 	full = full .. v .. "\n"
 end
 thanksMessage:Set(full)
-tym:AddButton("Сохранить", function()
+tym:AddButton("Save", function()
 	local split = {}
 	for newline in string.gmatch(thanksMessage:Get(), "[^\n]+") do
 		table.insert(split, newline)
@@ -607,7 +582,7 @@ tym:AddButton("Сохранить", function()
 	getgenv().settings.thanksMessage = split
 	saveSettings()
 end)
-local bm = chatTab:AddFolder("Сообщения пж:")
+local bm = chatTab:AddFolder("Begging Messages:")
 local begMessage = bm:AddConsole({
 	["y"] = 170,
 	["source"] = "",
@@ -617,7 +592,7 @@ for i, v in ipairs(getgenv().settings.begMessage) do
 	bfull = bfull .. v .. "\n"
 end
 begMessage:Set(bfull)
-bm:AddButton("Сохранить", function()
+bm:AddButton("Save", function()
 	local bsplit = {}
 	for newline in string.gmatch(begMessage:Get(), "[^\n]+") do
 		table.insert(bsplit, newline)
@@ -628,12 +603,12 @@ end)
   
   
   --Webhook Settings
-local webhookToggle = webhookTab:AddSwitch("Дискорд уведомления вебхук:", function(bool)
+local webhookToggle = webhookTab:AddSwitch("Discord Webhook Notifications", function(bool)
 	getgenv().settings.webhookToggle = bool
 	saveSettings()
 end)
 webhookToggle:Set(getgenv().settings.webhookToggle)
-local webhookBox = webhookTab:AddTextBox("URL вебхука", function(text)
+local webhookBox = webhookTab:AddTextBox("Webhook URL", function(text)
 	if string.find(text, "api/") then
 		getgenv().settings.webhookBox = text;
 		saveSettings()
@@ -643,10 +618,10 @@ end,
 	["clear"] = false
 })
 webhookBox.Text = getgenv().settings.webhookBox
-webhookTab:AddLabel('Нажмите Enter для сохранения')
-webhookTab:AddButton("Тест вебхука", function()
+webhookTab:AddLabel('Press Enter to Save')
+webhookTab:AddButton("Test", function()
 	if getgenv().settings.webhookBox then
-		webhook("Вебхук работает! | TpaBa\nАктуальная версия скрипта : v0.95")
+		webhook("webhook works | dotgg")
 	end
 end)
   
@@ -657,7 +632,7 @@ pcall(function()
 		vcEnabled = true
 	end
 end)
-local serverHopToggle = serverHopTab:AddSwitch("Авто смена сервера", function(bool)
+local serverHopToggle = serverHopTab:AddSwitch("Auto Server Hop", function(bool)
 	if settingsLock then
 		return
 	end
@@ -665,9 +640,9 @@ local serverHopToggle = serverHopTab:AddSwitch("Авто смена сервер
 	hopSet()
 	saveSettings()
 end)
-serverHopTab:AddLabel("Таймер перезапускается после доната")
+serverHopTab:AddLabel("Server hop timer resets after donation")
 serverHopToggle:Set(getgenv().settings.serverHopToggle)
-local serverHopDelay = serverHopTab:AddSlider("Задержка смены сервера (M)", function(x)
+local serverHopDelay = serverHopTab:AddSlider("Server Hop Delay (M)", function(x)
 	if settingsLock then
 		return
 	end
@@ -682,7 +657,7 @@ end,
 serverHopDelay:Set((getgenv().settings.serverHopDelay / 120) * 100)
 
 if vcEnabled then
-	local vcToggle = serverHopTab:AddSwitch("Сервера с голосовым чатом", function(bool)
+	local vcToggle = serverHopTab:AddSwitch("Voice Chat Servers", function(bool)
 		if settingsLock then
 			return
 		end
@@ -691,23 +666,23 @@ if vcEnabled then
 	end)
 	vcToggle:Set(getgenv().settings.vcServer)
 end
-local alhop = serverHopTab:AddSwitch("Рандомная смена", function(bool)
+local alhop = serverHopTab:AddSwitch("Random Hop", function(bool)
 	getgenv().settings.AlternativeHop = bool
 	saveSettings()
 end)
 alhop:Set(getgenv().settings.AlternativeHop)
-serverHopTab:AddButton("Смена сервера", function()
+serverHopTab:AddButton("Server Hop", function()
 	serverHop()
 end)
   --Other tab
-otherTab:AddLabel('Танец:')
+otherTab:AddLabel('Dance:')
 local danceDropdown = otherTab:AddDropdown("[ " .. getgenv().settings.danceChoice .. " ]", function(object)
 	if settingsLock then
 		return
 	end
 	getgenv().settings.danceChoice = object
 	saveSettings()
-	if object == "Приветствие" then
+	if object == "Disabled" then
 		Players:Chat("/e wave")
 	elseif object == "1" then
 		Players:Chat("/e dance")
@@ -716,11 +691,11 @@ local danceDropdown = otherTab:AddDropdown("[ " .. getgenv().settings.danceChoic
 	end
 end)
 
-danceDropdown:Add("Приветствие")
+danceDropdown:Add("Disabled")
 danceDropdown:Add("1")
 danceDropdown:Add("2")
 danceDropdown:Add("3")
-local render = otherTab:AddSwitch("Отключить Рендер", function(bool)
+local render = otherTab:AddSwitch("Disable Rendering", function(bool)
 	getgenv().settings.render = bool
 	saveSettings()
 	if bool then
@@ -729,17 +704,17 @@ local render = otherTab:AddSwitch("Отключить Рендер", function(bo
 		game:GetService("RunService"):Set3dRenderingEnabled(true)
 	end
 end)
-local jumpswitch = otherTab:AddSwitch("Прыжок за донат", function(bool)
+local jumpswitch = otherTab:AddSwitch("Donation Jump", function(bool)
 	getgenv().settings.donationJump = bool
 	saveSettings()
 end)
 jumpswitch:Set(getgenv().settings.donationJump)
-local autoReply = otherTab:AddSwitch("Авто ответ (ТЕСТОВАЯ ФУНКЦИЯ!)", function(bool)
+local autoReply = otherTab:AddSwitch("Auto Reply [Experimental]", function(bool)
 	getgenv().settings.autoNearReply = bool
 	saveSettings()
 end)
 autoReply:Set(getgenv().settings.autoNearReply)
-local anMode = otherTab:AddSwitch('Режим анонимуса', function(bool)
+local anMode = otherTab:AddSwitch('Anonymous Mode', function(bool)
 	getgenv().settings.AnonymousMode = bool
 	if getgenv().settings.AnonymousMode then
 		require(game:GetService('ReplicatedStorage').Remotes).Event('SetDonatedVisibility'):FireServer(false)
@@ -775,8 +750,41 @@ jumpsPerRB:Set(getgenv().settings.jumpsPerRobux)
 
 sHopSwitch:Set(getgenv().settings.serverHopAfterDonation)
 
+if getgenv().settings.AnonymousMode then
+	require(game:GetService('ReplicatedStorage').Remotes).Event('SetDonatedVisibility'):FireServer(false)
+end
+
+function startBoothSwitching()
+	while task.wait() do
+		if not getgenv().settings.boothSwitcher then break end
+		for i,v in next, bThemes:GetChildren() do
+			if v:IsA("TextButton") and v.Visible == true and getgenv().settings.boothSwitcher then
+			   require(game:GetService('ReplicatedStorage').Remotes).Event("EditBoothModel"):FireServer(v.Name)
+			   task.wait(3)
+			end
+		end
+	end
+end
+
+local boothSwitch = otherTab:AddSwitch('Booth Switcher',function(bool)
+	getgenv().settings.boothSwitcher = bool
+	task.spawn(function()
+		startBoothSwitching()
+	end)
+	saveSettings()
+end)
+
+boothSwitch:Set(getgenv().settings.boothSwitcher)
+
+local sHopSwitch = otherTab:AddSwitch('ServerHop after donation',function(bool)
+	getgenv().settings.serverHopAfterDonation = bool
+	saveSettings()
+end)
+
+sHopSwitch:Set(getgenv().settings.serverHopAfterDonation)
+
 if setfpscap and type(setfpscap) == "function" then
-	local fpsLimit = otherTab:AddSlider("FPS Лимит", function(x)
+	local fpsLimit = otherTab:AddSlider("FPS Limit", function(x)
 		if settingsLock then
 			return
 		end
@@ -786,7 +794,7 @@ if setfpscap and type(setfpscap) == "function" then
 	end,
 	  {
 		["min"] = 1,
-		["max"] = 144
+		["max"] = 60
 	})
 	fpsLimit:Set((getgenv().settings.fpsLimit / 60) * 100)
 	setfpscap(getgenv().settings.fpsLimit)
@@ -872,8 +880,7 @@ Players.LocalPlayer.leaderstats.Raised.Changed:Connect(function()
 	if getgenv().settings.webhookToggle and getgenv().settings.webhookBox then
 		local LogService = Game:GetService("LogService")
 		local logs = LogService:GetLogHistory()
-		webhook("╔🛎Пришёл донат!🛎\n║💸 Поднято ⏣: ".. tostring(Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) .. '\n║⏣После комиссии: ' .. tostring(math.floor((Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) * 0.6)) .. 'R$) \n║💸Всего ⏣: ' .. tostring(Players.LocalPlayer.leaderstats.Raised.Value) .. 'R$  \n╚:bust_in_silhouette:Аккаунт: ' .. Players.LocalPlayer.DisplayName .. ' (' .. Players.LocalPlayer.Name .. ')')
-	end
+		webhook("╔🛎Пришёл донат!🛎\n║💸 Поднято ⏣: ".. tostring(Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) .. '\n║⏣После комиссии: ' .. tostring(math.floor((Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) * 0.6)) .. 'R$) \n║💸Всего ⏣: ' .. tostring(Players.LocalPlayer.leaderstats.Raised.Value) .. 'R$  \n╚:bust_in_silhouette:Аккаунт: ' .. Players.LocalPlayer.DisplayName .. ' (' .. Players.LocalPlayer.Name .. ')') end
 	if getgenv().settings.serverHopAfterDonation then
 		task.spawn(function()
 			serverHop()
@@ -881,20 +888,12 @@ Players.LocalPlayer.leaderstats.Raised.Changed:Connect(function()
 	end
 	if getgenv().settings.donationJump then
 		task.spawn(function()
-			if getgenv().settings.jumpsPerRobux == 1 then
-				for i = 1, game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC do
-					game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
-					repeat
-						task.wait()
-					until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
-				end
-			else
-				for i = 1, (game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC) * getgenv().settings.jumpsPerRobux do
-					game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
-					repeat
-						task.wait()
-					until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
-				end
+			for i = 1, game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC do
+				game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+                                task.wait(0.1)
+				repeat
+					task.wait()
+				until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Landed or game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
 			end
 		end)
 	end
@@ -944,7 +943,7 @@ msgdone.OnClientEvent:Connect(function(msgdata)
 	end)
 end)
 
-game:GetService("CoreGui").imgui.Windows.Window.Title.Text = "TpaBa | v0.95"
+game:GetService("CoreGui").imgui.Windows.Window.Title.Text = "TpaBa | v0.95 (BETA)"
 
 while task.wait(getgenv().settings.serverHopDelay * 60) do
 	if not hopTimer then
