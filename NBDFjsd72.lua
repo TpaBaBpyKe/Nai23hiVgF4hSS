@@ -1,4 +1,4 @@
-version11 = 'v1.2(Тестовая версия)'
+version11 = 'v1.2'
 repeat wait() until game:IsLoaded()
 --Stops script if on a different game
 if game.PlaceId ~= 8737602449 and game.PlaceId ~= 8943844393 then
